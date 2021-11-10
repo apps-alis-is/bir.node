@@ -1,0 +1,10 @@
+{
+    "Description": '''
+Bitrake node'''
+    Links: [
+        { 
+            website: "https://birake.com/",
+            explorer: "https://explorer.birake.com/"
+        }
+    ]
+}
