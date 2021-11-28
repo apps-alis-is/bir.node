@@ -24,7 +24,7 @@ return {
                 end
 
                 if _noOptions or _options.app then
-                    am.execute_extension("__bir/download-binaries.lua", { contextFailExitCode = EXIT_SETUP_ERROR })
+                    am.execute_extension("__btc/download-binaries.lua", { contextFailExitCode = EXIT_SETUP_ERROR })
                 end
 
                 if _noOptions or not _options["no-validate"] then
