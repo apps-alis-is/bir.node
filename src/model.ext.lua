@@ -7,11 +7,11 @@ am.app.set_model(
             masternodeprivkey = am.app.get_configuration("NODE_PRIVKEY"),
             masternode = am.app.get_configuration("NODE_PRIVKEY") and 1 or nil
         },
-        DAEMON_NAME = "birakecoind",
-        CLI_NAME = "birakecoin-cli",
-        CONF_NAME = "birakecoin.conf",
+        DAEMON_NAME = "biraked",
+        CLI_NAME = "birake-cli",
+        CONF_NAME = "birake.conf",
         CONF_SOURCE = "__btc/assets/daemon.conf",
-        SERVICE_NAME = "birakecoind"
+        SERVICE_NAME = "biraked"
     },
     { merge = true, overwrite = true }
 )
