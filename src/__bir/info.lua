@@ -17,7 +17,7 @@ local _info = {
     started = _started,
     level = 'ok',
     synced = false,
-    status = 'BITG node down',
+    status = 'BIR node down',
     version = am.app.get_version(),
     type = am.app.get_type(),
     currentBlock = 'unknown',
@@ -26,10 +26,10 @@ local _info = {
 
 local function _exec_bir_cli(...)
     local _arg = {'-datadir=data', ...}
-    -- local _rpcBind = am.app.get_configuration({'DAEMON_CONFIGURATION', 'rpcbind'})
-    -- if type(_rpcBind) == 'string' then
-    --     table.insert(_arg, 1, '-rpcconnect=' .. _rpcBind)
-    -- end
+    local _rpcBind = am.app.get_configuration({'DAEMON_CONFIGURATION', 'rpcbind'})
+    if type(_rpcBind) == 'string' then
+        table.insert(_arg, 1, '-rpcconnect=' .. _rpcBind)
+    end
     local _proc = proc.spawn(path.combine("bin", am.app.get_model("CLI_NAME")), _arg, {stdio = {stdout = 'pipe', stderr = 'pipe'}, wait = true})
 
     local _exitcode = _proc.exitcode
