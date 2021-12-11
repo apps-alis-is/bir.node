@@ -61,7 +61,7 @@ if _info.birakecoind == 'running' then
     local _nodeType = "node"
     if am.app.get_configuration("NODE_PRIVKEY") or am.app.get_configuration({"DAEMON_CONFIGURATION", "masternode"}) then
         _nodeType = "masternode"
-        local _exitcode, _stdout, _stderr = _exec_bir_cli("-datadir=data", "masternodedebug")
+        local _exitcode, _stdout, _stderr = _exec_bir_cli("-datadir=data", "getmasternodestatus")
         local _success, _output = _get_bir_cli_result(_exitcode, _stdout, _stderr)
 
         _info.status = _output.message
