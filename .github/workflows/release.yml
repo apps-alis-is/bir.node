@@ -40,22 +40,16 @@ jobs:
           export PACKAGE_SOURCE=https://github.com/apps-alis-is/bir.node/releases/download/${{github.ref_name}}/bir.node-${{github.ref_name}}.zip
           echo "::set-output name=SHA256::$SHA256"
 
-      - name: Checkout Air
-        uses: actions/checkout@v2.4.0
+      - name: Air Repository Dispatch
+        uses: peter-evans/repository-dispatch@v1
+        env: 
+          SHA256: ${{ steps.release_info.outputs.SHA256 }}
+          PACKAGE_SOURCE: ${{ steps.release_info.outputs.PACKAGE_SOURCE }}
         with:
-          # Repository name with owner. For example, actions/checkout
+          token: ${{ secrets.AIR_ACCESS_TOKEN }}
           repository: alis-is/air
-          path: air
-        
-      - name: push air branch
-        working-directory: air
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_ACTOR: ${{ github.actor }}
-        run: |
-          git remote set-url origin  https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/apps-alis-is/bir.node.git
-          git push origin air-update --force
-          
+          event-type: app-release
+          client-payload: '{ "repository": "${{github.repository}}", "version": "${{github.ref_name}}", "package": "$PACKAGE_SOURCE", "sha256": "$SHA256"}'
       
         
           
