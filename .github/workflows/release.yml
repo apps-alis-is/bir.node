@@ -20,19 +20,32 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      # Runs a single command using the runners shell
-      - name: Zip Release
-        uses: TheDoctor0/zip-release@0.6.0
-        with:
-          filename: bir.node-${{github.ref_name}}.zip
-          # Base path for archive files
-          path: "*"
-          directory: src
-          type: zip
+      - name: Generate SHA256 and PACKAGE_SOURCE
+        working-directory: src
+        run: |
+          zip ../bir.node-${{github.ref_name}}.zip -r *
   
       - name: Upload files to a GitHub release
         uses: svenstaro/upload-release-action@2.2.1
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{github.ref}}
-          file: src/bir.node-${{github.ref_name}}.zip
+          file: bir.node-${{github.ref_name}}.zip
+  
+      - name: Generate SHA256 and PACKAGE_SOURCE
+        run: |
+          export SHA256=$(sha256sum bir.node-${{github.ref_name}}.zip)
+          echo "::set-env name=SHA256::$SHA256"
+          export PACKAGE_SOURCE=https://github.com/apps-alis-is/bir.node/releases/download/${{github.ref_name}}/bir.node-${{github.ref_name}}.zip
+          echo "::set-env name=SHA256::$SHA256"
+
+      - name: Repository Dispatch
+        uses: peter-evans/repository-dispatch@v1
+        with:
+          token: ${{ secrets.REPO_ACCESS_TOKEN }}
+          repository: alis-is/air
+          event-type: app-release
+          client-payload: '{ "repository": "${{github.repository}}", "version": "${{github.ref_name}}", "package": "$PACKAGE_SOURCE", "sha256": "$SHA256"}'
+        
+          
+          
