@@ -35,12 +35,10 @@ jobs:
   
       - name: Upload files to a GitHub release
         uses: svenstaro/upload-release-action@2.2.1
-        env:
-          ID: ${{ steps.repository_info.outputs.ID }}
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{github.ref}}
-          file: $ID-${{github.ref_name}}.zip
+          file: ${{ steps.repository_info.outputs.ID }}-${{github.ref_name}}.zip
   
       - name: Generate SHA256 and PACKAGE_SOURCE
         id: release_info
@@ -55,15 +53,11 @@ jobs:
 
       - name: Air Repository Dispatch
         uses: peter-evans/repository-dispatch@v1
-        env: 
-          SHA256: ${{ steps.release_info.outputs.SHA256 }}
-          PACKAGE_SOURCE: ${{ steps.release_info.outputs.PACKAGE_SOURCE }}
-          ID: ${{ steps.release_info.outputs.ID }}
         with:
           token: ${{ secrets.AIR_ACCESS_TOKEN }}
           repository: alis-is/air
           event-type: app-release
-          client-payload: '{ "id": "$ID", "repository": "${{github.repository}}", "version": "${{github.ref_name}}", "package": "$PACKAGE_SOURCE", "sha256": "$SHA256"}'
+          client-payload: '{ "id": "${{ steps.release_info.outputs.ID }}", "repository": "${{github.repository}}", "version": "${{github.ref_name}}", "package": "${{ steps.release_info.outputs.PACKAGE_SOURCE }}", "sha256": "${{ steps.release_info.outputs.SHA256 }}"}'
       
         
           
