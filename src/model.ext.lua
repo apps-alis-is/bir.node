@@ -10,8 +10,8 @@ am.app.set_model(
         DAEMON_NAME = "biraked",
         CLI_NAME = "birake-cli",
         CONF_NAME = "birake.conf",
-        CONF_SOURCE = "__btc/assets/daemon.conf",
-        SERVICE_NAME = "biraked"
+        SERVICE_NAME = "biraked",
+        ABOUT_SOURCE = "__bir/about.hjson"
     },
     { merge = true, overwrite = true }
 )
