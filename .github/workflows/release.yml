@@ -26,6 +26,6 @@ jobs:
         with:
           filename: bir.node-${{github.ref_name}}.zip
           # Base path for archive files
-          path: src
+          path: "*"
           directory: src
           type: zip
