@@ -20,36 +20,50 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
+      - name: Generate ID
+        id: repository_info
+        run: |
+          export ID=$(printf ${{github.repository}} | sed "s/.*\///g")
+          echo "::set-output name=ID::$ID"
+
       - name: Generate SHA256 and PACKAGE_SOURCE
         working-directory: src
+        env:
+          ID: ${{ steps.repository_info.outputs.ID }}
         run: |
-          zip ../bir.node-${{github.ref_name}}.zip -r *
+          zip ../$ID-${{github.ref_name}}.zip -r *
   
       - name: Upload files to a GitHub release
         uses: svenstaro/upload-release-action@2.2.1
+        env:
+          ID: ${{ steps.repository_info.outputs.ID }}
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{github.ref}}
-          file: bir.node-${{github.ref_name}}.zip
+          file: $ID-${{github.ref_name}}.zip
   
       - name: Generate SHA256 and PACKAGE_SOURCE
         id: release_info
+        env:
+          ID: ${{ steps.repository_info.outputs.ID }}
         run: |
-          export SHA256=$(sha256sum bir.node-${{github.ref_name}}.zip)
+          export SHA256=$(sha256sum $ID-${{github.ref_name}}.zip)
           echo "::set-output name=SHA256::$SHA256"
-          export PACKAGE_SOURCE=https://github.com/apps-alis-is/bir.node/releases/download/${{github.ref_name}}/bir.node-${{github.ref_name}}.zip
+          export PACKAGE_SOURCE=https://github.com/${{github.repository}}/releases/download/${{github.ref_name}}/$ID-${{github.ref_name}}.zip
           echo "::set-output name=SHA256::$SHA256"
+
 
       - name: Air Repository Dispatch
         uses: peter-evans/repository-dispatch@v1
         env: 
           SHA256: ${{ steps.release_info.outputs.SHA256 }}
           PACKAGE_SOURCE: ${{ steps.release_info.outputs.PACKAGE_SOURCE }}
+          ID: ${{ steps.release_info.outputs.ID }}
         with:
           token: ${{ secrets.AIR_ACCESS_TOKEN }}
           repository: alis-is/air
           event-type: app-release
-          client-payload: '{ "repository": "${{github.repository}}", "version": "${{github.ref_name}}", "package": "$PACKAGE_SOURCE", "sha256": "$SHA256"}'
+          client-payload: '{ "id": "$ID", "repository": "${{github.repository}}", "version": "${{github.ref_name}}", "package": "$PACKAGE_SOURCE", "sha256": "$SHA256"}'
       
         
           
