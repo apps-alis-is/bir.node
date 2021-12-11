@@ -45,11 +45,10 @@ jobs:
         env:
           ID: ${{ steps.repository_info.outputs.ID }}
         run: |
-          export SHA256=$(sha256sum $ID-${{github.ref_name}}.zip)
+          export SHA256=$(sha256sum $ID-${{github.ref_name}}.zip | awk '{print $1}')
           echo "::set-output name=SHA256::$SHA256"
           export PACKAGE_SOURCE=https://github.com/${{github.repository}}/releases/download/${{github.ref_name}}/$ID-${{github.ref_name}}.zip
-          echo "::set-output name=SHA256::$SHA256"
-
+          echo "::set-output name=PACKAGE_SOURCE::$PACKAGE_SOURCE"
 
       - name: Air Repository Dispatch
         uses: peter-evans/repository-dispatch@v1
@@ -57,7 +56,7 @@ jobs:
           token: ${{ secrets.AIR_ACCESS_TOKEN }}
           repository: alis-is/air
           event-type: app-release
-          client-payload: '{ "id": "${{ steps.release_info.outputs.ID }}", "repository": "${{github.repository}}", "version": "${{github.ref_name}}", "package": "${{ steps.release_info.outputs.PACKAGE_SOURCE }}", "sha256": "${{ steps.release_info.outputs.SHA256 }}"}'
+          client-payload: '{ "id": "${{ steps.repository_info.outputs.ID }}", "repository": "${{github.repository}}", "version": "${{github.ref_name}}", "package": "${{ steps.release_info.outputs.PACKAGE_SOURCE }}", "sha256": "${{ steps.release_info.outputs.SHA256 }}"}'
       
         
           
